@@ -20,8 +20,9 @@ class Item(db.Model):
     def __repr__(self):
         return f'Запись: {self.title}, {self.price}, {self.info}'
 
-@app.route('/')
+@app.route('/', )
 def index():
+
     items = Item.query.order_by(Item.price).all()
     return render_template('index.html', data=items)
 
@@ -52,6 +53,42 @@ def create():
 
         return render_template('create.html')
 
+@app.route('/product/<prod_id>', methods=['GET','POST'])
+def redact(prod_id):
 
+    if request.method == 'GET':
+        try:
+            item = Item.query.get(prod_id)
+            return render_template('redact.html',item=item)
+        except:
+            return 'Произошла ошибка'
+
+    if request.method == 'POST':
+        item = Item.query.get(prod_id)
+
+        title = request.form['title']
+        price = request.form['price']
+        info = request.form['info']
+
+        item.title = title
+        item.price = price
+        item.info = info
+
+        db.session.commit()
+        return redirect('/')
+
+@app.route('/delete/<prod_id>',methods=['GET','POST'])
+def delete(prod_id):
+    if request.method == 'GET':
+        try:
+            item = Item.query.get(prod_id)
+            return render_template('delete.html',item=item)
+        except:
+            return 'Произошла ошибка'
+    if request.method == 'POST':
+        item = Item.query.get(prod_id)
+        db.session.delete(item)
+        db.session.commit()
+        return redirect('/')
 if __name__ == '__main__':
     app.run(debug=True)

@@ -2,6 +2,7 @@
 
 {% block title %}
     <title>Магазин</title>
+
 {% endblock %}
 
 {% block body %}
@@ -14,16 +15,20 @@
 </div>
 
 <div class="container">
+
+
+
   <div class="card-deck mb-3 text-center">
 
   {%for el in data%}
-  <div class="card mb-4 shadow-sm">
+
+    <div class="card mb-4 shadow-sm">
       <div class="card-header">
-        <h4 class="my-0 font-weight-normal">{{el.title}}</h4>
+        <h4 class="my-0 font-weight-normal">{{el.title}}</h4><a href="/product/{{el.id}}" class="badge badge-primary">ред</a><a href="/delete/{{el.id}}" class="badge badge-danger">удалить</a>
       </div>
-      <div class="card-body">
-        <h1 class="card-title pricing-card-title">{{el.price}} <small class="text-muted">rub</small></h1>
-        <ul class="list-unstyled mt-3 mb-4">
+      <div class="card-body d-flex flex-column">
+        <h1 class="card-title pricing-card-title ">{{el.price}} <small class="text-muted">rub</small></h1>
+        <ul class="list-unstyled mt-4 mb-6">
           {% for i in el.info.split(' ')%}
           {% if i|length >8 %}
             <li>{{i}}</li>
@@ -32,7 +37,10 @@
             {% endif %}
             {% endfor %}
         </ul>
-        <a href="" class="btn btn-lg btn-block btn-outline-primary">Купить</a>
+
+
+        <a href="" class="btn btn-lg btn-block btn-outline-primary mt-auto ">Купить</a>
+
       </div>
     </div>
   {% endfor %}

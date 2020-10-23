@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Редактирывание</title>
+{% endblock %}
+{% block body %}
+<div class="container">
+
+    <h2>Редактирывание объявления</h2>
+    <form method="post" action="/product/{{item.id}}">
+        <input type="text" class=form-control" name="title" id="title" value="{{item.title}}" maxlength="12"><br><br>
+        <input type="number" class=form-control" name="price" id="price" value="{{item.price}}" ><br><br>
+        <textarea type="text" class=form-control" name="info" id="info" value="{{item.info}}" >{{item.info}}</textarea><br><br>
+
+        <button class="btn btn-success " type="submit">Редактирывать</button><br>
+
+    </form>
+</div>
+
+
+{% endblock %}
