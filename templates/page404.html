@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Страница не найдена!</title>
+
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <p>Ошибка 404! Страница не найдена, вернуться на <a href="{{url_for('index')}}">главную</a>.  </p>
+</div>
+
+{% endblock %}

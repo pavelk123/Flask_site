@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+    <link rel="stylesheet" href="{{url_for('static',filename='css/style.css') }}" type="text/css">
 
 {% block title %}{% endblock %}
 </head>
@@ -16,7 +16,12 @@
     <a class="p-2 text-dark" href="/rules">Правила</a>
     <a class="p-2 text-dark" href="/about">О комании</a>
   </nav>
-  <a class="btn btn-outline-primary" href="/create">Добавить товар</a>
+
+      {% if 'userLogged' in session   %}
+      <a class="btn btn-outline-primary" href="/create">Добавить товар</a>
+      {% else %}
+      <a class="btn btn-outline-primary" href="/login">Войти</a>
+      {% endif %}
     </div>
 
 
