@@ -1,4 +1,5 @@
-from flask import Flask, render_template, url_for, request, redirect, make_response, flash, session
+from flask import Flask, render_template, url_for, request, redirect, make_response, flash, session, abort
+
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 
@@ -35,25 +36,62 @@ class Item(db.Model):
     info = db.Column(db.Text, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     isActive = db.Column(db.Boolean, default=True)
+    parent = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
         return f'Запись: {self.title}, {self.price}, {self.info}'
 
 
+#admin = User(name='admin',username='admin1',email='sdfsdfsdf@dfsdf',password_hash='123')
+
 
 @app.route('/login', methods=['GET','POST'])
 def login():
-    if 'userLogged' in session:
+    if request.method =='POST':
+        login = request.form['login']
+        password= request.form['password']
+        user = User.query.filter_by(username=login).first()
+        if user is not None:
+            if user.username == login and user.password_hash == password:
+                session['userLogged'] = request.form['login']
+                flash(f'Вы вошли под ником {session["userLogged"]}',category='primary')
+                return redirect(url_for('profile', username=session['userLogged']))
+            else:
+                flash('Неправильный логин или пароль',category='danger')
+
+        else:
+            flash('Такого пользователя не существует', category='danger')
+    elif 'userLogged' in session:
         return redirect(url_for('profile', username=session['userLogged']))
-    elif request.method == 'POST' and request.form['login'] == 'admin' and request.form['password'] == '123':
-        session['userLogged'] = request.form['login']
-        return redirect(url_for('profile', username=session['userLogged']))
+   # elif request.method == 'POST' and request.form['login'] == 'admin' and request.form['password'] == '123':
+    #    session['userLogged'] = request.form['login']
+    #    flash(f'Вы вошли под ником {session["userLogged"]}')
+     #   return redirect(url_for('profile', username=session['userLogged']))
+
+
     return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+
+
+
 
 
 @app.route('/profile/<username>')
 def profile(username):
-    return "Пользователь"+username
+
+
+    if 'userLogged' not in session or session['userLogged'] != username:
+        abort(401)
+
+    items = Item.query.filter_by(parent=session['userLogged']).all()
+
+
+    return render_template('profile.html', data=items)
 
 
 @app.route('/cookie/',)
@@ -83,12 +121,17 @@ def rules():
 
 @app.route('/create',methods=['POST','GET'])
 def create():
+    if 'userLogged' not in session:
+        abort(401)
+
+
     if request.method == 'POST':
         title = request.form['title']
         price = request.form['price']
         info = request.form['info']
+        parent = session['userLogged']
 
-        item = Item(title=title,price=price, info=info)
+        item = Item(title=title,price=price, info=info, parent=parent)
         try:
             db.session.add(item)
             db.session.commit()
@@ -97,6 +140,7 @@ def create():
 
             return redirect('/')
         except:
+            flash('Что-то пошло не так',category='danger')
             return 'Получилась ошибка'
     else:
 
@@ -104,6 +148,8 @@ def create():
 
 @app.route('/product/<int:prod_id>', methods=['GET','POST'])
 def redact(prod_id):
+    if 'userLogged' not in session:
+        abort(401)
 
     if request.method == 'GET':
         try:
@@ -129,13 +175,15 @@ def redact(prod_id):
 
 @app.route('/delete/<prod_id>',methods=['GET','POST'])
 def delete(prod_id):
+    if 'userLogged' not in session:
+        abort(401)
     if request.method == 'GET':
         try:
             item = Item.query.get(prod_id)
             return render_template('delete.html',item=item)
         except:
 
-            return 'Произошла ошибка'
+            flash('Произошла ошибка')
     if request.method == 'POST':
         item = Item.query.get(prod_id)
         db.session.delete(item)
