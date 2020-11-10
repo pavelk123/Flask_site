@@ -148,12 +148,14 @@ def create():
 
 @app.route('/product/<int:prod_id>', methods=['GET','POST'])
 def redact(prod_id):
-    if 'userLogged' not in session:
-        abort(401)
+
 
     if request.method == 'GET':
         try:
             item = Item.query.get(prod_id)
+            if 'userLogged' not in session or item.parent != session['userLogged']:
+                abort(401)
+
             return render_template('redact.html',item=item)
         except:
             return 'Произошла ошибка'
@@ -175,11 +177,14 @@ def redact(prod_id):
 
 @app.route('/delete/<prod_id>',methods=['GET','POST'])
 def delete(prod_id):
-    if 'userLogged' not in session:
-        abort(401)
+
     if request.method == 'GET':
+
         try:
             item = Item.query.get(prod_id)
+            if 'userLogged' not in session or item.parent != session['userLogged']:
+                abort(401)
+
             return render_template('delete.html',item=item)
         except:
 
