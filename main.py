@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, request, redirect, make_response, flash, session, abort
-
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 
@@ -39,10 +39,42 @@ class Item(db.Model):
     parent = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
-        return f'Запись: {self.title}, {self.price}, {self.info}'
+        return f'Запись:{self.id} {self.title}, {self.price}, {self.info}'
 
 
 #admin = User(name='admin',username='admin1',email='sdfsdfsdf@dfsdf',password_hash='123')
+
+@app.route('/registration', methods=['GET', 'POST'])
+def registr():
+    if request.method == 'POST':
+        name = request.form['username']
+        login = request.form['login']
+        email = request.form['email']
+        password = request.form['password']
+        password2 = request.form['password2']
+        if password == password2:
+            isNotInBase = True
+            users = User.query.all()
+            for user in users:
+                if login == user.username:
+                    flash('Такой пользователь уже зарегестрирыван',category='danger')
+                    isNotInBase = False
+                    return redirect(url_for('registr'))
+            if isNotInBase is True:
+                user_new = User(name=name,username=login,email=email,password_hash=generate_password_hash(password))
+                try:
+                    db.session.add(user_new)
+                    db.session.commit()
+                    flash('Вы зарегестрирывались',category='success')
+                    return redirect(url_for('registr'))
+                except:
+                    flash('Что-то пошло не так(((',category='danger')
+                    return redirect(url_for('registr'))
+        else:
+            flash('Пароли не совпадают',category='danger')
+            return redirect(url_for('registr'))
+    if request.method == 'GET':
+        return render_template('register.html')
 
 
 @app.route('/login', methods=['GET','POST'])
@@ -52,7 +84,7 @@ def login():
         password= request.form['password']
         user = User.query.filter_by(username=login).first()
         if user is not None:
-            if user.username == login and user.password_hash == password:
+            if user.username == login and check_password_hash(user.password_hash, password) == True:
                 session['userLogged'] = request.form['login']
                 flash(f'Вы вошли под ником {session["userLogged"]}',category='primary')
                 return redirect(url_for('profile', username=session['userLogged']))

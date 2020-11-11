@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Регистрация</title>
+{% endblock %}
+
+{% block body %}
+
+
+<div class="container text-center">
+  <div class="card-deck mb-4 text-center">
+
+
+    <form method="post" action="{{url_for('registr')}}">
+        <h2 class="form-control">Регистрация </h2>
+        <input type="text" class=form-control" name="username" id="username" placeholder="Ваше имя" maxlength="12" required><br><br>
+        <input type="text" class=form-control" name="login" id="login" placeholder="Логин" maxlength="12" required><br><br>
+        <input type="email" class=form-control" name="email" id="email" placeholder="email" maxlength="15" required><br><br>
+        <input type="password" class=form-control" name="password" id="password" placeholder="Введите пароль" required><br><br>
+        <input type="password" class=form-control" name="password2" id="password2" placeholder="Введите пароль повторно" required><br><br>
+
+
+
+        <button class="btn btn-success " type="submit">Зарегестрирываться</button><br>
+
+
+    </form>
+
+</div>
+</div>
+
+
+{% endblock %}
