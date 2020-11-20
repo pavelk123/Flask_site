@@ -36,6 +36,7 @@ class Item(db.Model):
     info = db.Column(db.Text, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     isActive = db.Column(db.Boolean, default=True)
+    href = db.Column(db.Text, nullable=False)
     parent = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
@@ -161,9 +162,10 @@ def create():
         title = request.form['title']
         price = request.form['price']
         info = request.form['info']
+        href = request.form['href']
         parent = session['userLogged']
 
-        item = Item(title=title,price=price, info=info, parent=parent)
+        item = Item(title=title,price=price, info=info,href=href ,parent=parent)
         try:
             db.session.add(item)
             db.session.commit()

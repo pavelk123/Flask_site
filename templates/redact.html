@@ -10,6 +10,7 @@
     <form method="post" action="/product/{{item.id}}">
         <input type="text" class=form-control" name="title" id="title" value="{{item.title}}" maxlength="12"><br><br>
         <input type="number" class=form-control" name="price" id="price" value="{{item.price}}" ><br><br>
+         <input type="text" class=form-control" name="href" id="href" value="{{item.href}}" ><br><br>
         <textarea type="text" class=form-control" name="info" id="info" value="{{item.info}}" >{{item.info}}</textarea><br><br>
 
         <button class="btn btn-success " type="submit">Редактирывать</button><br>
